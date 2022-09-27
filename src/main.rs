@@ -34,5 +34,5 @@ fn main() {
         y += 1;
     }
 
-    println!("{}", board[0][2].current_value)
+    //println!("{}", board[0][2].current_value)
 }
