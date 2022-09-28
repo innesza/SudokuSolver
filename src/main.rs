@@ -2,8 +2,21 @@ use std::fs::File;
 use std::io::{BufReader, BufRead};
 
 struct Cell {
-    super_pos: Vec<u8>,
+    super_pos: Vec<u32>,
     current_value: u32
+}
+
+fn propagate(board: &mut Vec<Vec<Cell>>, x: usize, y: usize) {
+    let val: u32 = board[y][x].current_value;
+    // Row
+    for i in 0..=8 {
+        board[y][i].super_pos.retain(|a| !a.eq(&val));
+    }
+    // Column
+    for i in 0..=8 {
+        board[i][x].super_pos.retain(|a| !a.eq(&val));
+    }
+    // Group
 }
 
 fn main() {
@@ -27,12 +40,16 @@ fn main() {
             if n.to_digit(10).unwrap() != 0 {
                 board[y][x].current_value = n.to_digit(10).unwrap();
                 board[y][x].super_pos.clear();
-                // Clear the positions no longer possible from super_pos of cells in same row, column, and group
+                propagate(&mut board, x, y)
             }
             x += 1;
         }
         y += 1;
     }
 
-    //println!("{}", board[0][2].current_value)
+    //println!("{}", board[0][4].current_value)
+    
+    //for i in 0..=board[0][4].super_pos.len()-1 {
+    //    println!("{}", board[0][4].super_pos[i]);
+    //}
 }
