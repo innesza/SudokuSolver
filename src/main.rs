@@ -7,13 +7,26 @@ struct Cell {
 }
 
 // Checks if the board has been completed
-fn board_complete() -> bool {
-    true
+fn board_complete(board: Vec<Vec<Cell>>) -> bool {
+    let mut sum: u32 = 0;
+    for y in 0..=8 {
+        for x in 0..=8 {
+            sum += board[y][x].current_value
+        }
+    }
+    sum == 405
 }
 
 // Checks if board is in a valid state
-fn board_invalid() -> bool {
-    true
+fn board_valid(board: Vec<Vec<Cell>>) -> bool {
+    for y in 0..=8 {
+        for x in 0..=8 {
+            if board[y][x].current_value == 0 && board[y][x].super_pos.len() == 0 {
+                return false;
+            }
+        }
+    }
+    return true
 }
 
 fn propagate(board: &mut Vec<Vec<Cell>>, x: usize, y: usize) {
@@ -31,9 +44,9 @@ fn propagate(board: &mut Vec<Vec<Cell>>, x: usize, y: usize) {
     // and that value plus 2 as the maximum. This ensures it gets the full 3x3 "group"
     let minx: usize = x-(x%3);
     let miny: usize = y-(y%3);
-    for i in minx..=minx+2 {
-        for j in miny..=miny+2 {
-            board[j][i].super_pos.retain(|a| !a.eq(&val));
+    for i in miny..=miny+2 {
+        for j in minx..=minx+2 {
+            board[i][j].super_pos.retain(|a| !a.eq(&val));
         }
     }
 }
@@ -66,9 +79,11 @@ fn main() {
         y += 1;
     }
 
-    //println!("{}", board[0][4].current_value)
-    
-    //for i in 0..=board[1][7].super_pos.len()-1 {
-    //    println!("{}", board[1][7].super_pos[i]);
+    //println!("{}", board[0][4].current_value);
+    //println!("{}", board_complete(board));
+    //println!("{}", board_valid(board));
+
+    //for i in 0..=board[7][1].super_pos.len()-1 {
+    //    println!("{}", board[7][1].super_pos[i]);
     //}
 }
