@@ -6,6 +6,16 @@ struct Cell {
     current_value: u32
 }
 
+// Checks if the board has been completed
+fn board_complete() -> bool {
+    true
+}
+
+// Checks if board is in a valid state
+fn board_invalid() -> bool {
+    true
+}
+
 fn propagate(board: &mut Vec<Vec<Cell>>, x: usize, y: usize) {
     let val: u32 = board[y][x].current_value;
     // Row
@@ -31,9 +41,9 @@ fn propagate(board: &mut Vec<Vec<Cell>>, x: usize, y: usize) {
 fn main() {
     // Setup and initialize the board
     let mut board: Vec<Vec<Cell>> = Vec::new();
-    for i in 1..=9 {
+    for _ in 1..=9 {
         let mut tempRow: Vec<Cell> = Vec::new();
-        for j in 1..=9 {
+        for _ in 1..=9 {
             tempRow.push(Cell{super_pos: vec![1, 2, 3, 4, 5, 6, 7, 8, 9], current_value: 0});
         }
         board.push(tempRow)
