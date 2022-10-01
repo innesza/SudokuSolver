@@ -17,6 +17,15 @@ fn propagate(board: &mut Vec<Vec<Cell>>, x: usize, y: usize) {
         board[i][x].super_pos.retain(|a| !a.eq(&val));
     }
     // Group
+    // Gets the range of the current "group" using difference between the current value and its remainder with 3 as the minimum
+    // and that value plus 2 as the maximum. This ensures it gets the full 3x3 "group"
+    let minx: usize = x-(x%3);
+    let miny: usize = y-(y%3);
+    for i in minx..=minx+2 {
+        for j in miny..=miny+2 {
+            board[j][i].super_pos.retain(|a| !a.eq(&val));
+        }
+    }
 }
 
 fn main() {
@@ -49,7 +58,7 @@ fn main() {
 
     //println!("{}", board[0][4].current_value)
     
-    //for i in 0..=board[0][4].super_pos.len()-1 {
-    //    println!("{}", board[0][4].super_pos[i]);
+    //for i in 0..=board[1][7].super_pos.len()-1 {
+    //    println!("{}", board[1][7].super_pos[i]);
     //}
 }
