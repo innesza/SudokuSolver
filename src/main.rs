@@ -79,6 +79,35 @@ fn main() {
         y += 1;
     }
 
+    let mut entropy: usize;
+    loop {
+        x = 0;
+        y = 0;
+        entropy = 9;
+        // Find lowest entropy cell
+        for i in 0..=8 {
+            for j in 0..=8 {
+                if board[i][j].super_pos.len() > 0 && board[i][j].super_pos.len() < entropy {
+                    entropy = board[i][j].super_pos.len();
+                    x = j;
+                    y = i;
+                }
+            }
+        }
+        if entropy == 1 {
+            board[y][x].current_value = board[y][x].super_pos[0];
+            board[y][x].super_pos.clear();
+            propagate(&mut board, x, y);
+            println!("{}", entropy);
+        } else {
+            break;
+        }
+        //break;
+    }
+
+    //println!("{} at {},{}", entropy, x, y);
+    println!("{}", board_complete(board))
+
     //println!("{}", board[0][4].current_value);
     //println!("{}", board_complete(board));
     //println!("{}", board_valid(board));
