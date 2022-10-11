@@ -7,7 +7,7 @@ struct Cell {
 }
 
 // Checks if the board has been completed
-fn board_complete(board: Vec<Vec<Cell>>) -> bool {
+fn board_complete(board: &Vec<Vec<Cell>>) -> bool {
     let mut sum: u32 = 0;
     for y in 0..=8 {
         for x in 0..=8 {
@@ -18,15 +18,25 @@ fn board_complete(board: Vec<Vec<Cell>>) -> bool {
 }
 
 // Checks if board is in a valid state
-fn board_valid(board: Vec<Vec<Cell>>) -> bool {
+fn board_valid(board: &Vec<Vec<Cell>>) -> bool {
     for y in 0..=8 {
         for x in 0..=8 {
             if board[y][x].current_value == 0 && board[y][x].super_pos.len() == 0 {
+                println!("{},{}", y, x);
                 return false;
             }
         }
     }
     return true
+}
+
+fn print_board(board: &Vec<Vec<Cell>>) {
+    for y in 0..=8 {
+        for x in 0..=8 {
+            print!("{}", board[y][x].current_value);
+        }
+        println!("");
+    }
 }
 
 fn propagate(board: &mut Vec<Vec<Cell>>, x: usize, y: usize) {
@@ -79,12 +89,23 @@ fn main() {
         y += 1;
     }
 
+    // Actual Solver
     let mut entropy: usize;
     loop {
+        if board_complete(&board) {
+            println!("Board Complete");
+            break;
+        }
+        if !board_valid(&board) {
+            println!("Invalid Board");
+            // Pop top board off the stack
+            // If stack is empty, puzzle is invalid?
+            break;
+        }
         x = 0;
         y = 0;
         entropy = 9;
-        // Find lowest entropy cell
+        // Find lowest entropy cell (above 0)
         for i in 0..=8 {
             for j in 0..=8 {
                 if board[i][j].super_pos.len() > 0 && board[i][j].super_pos.len() < entropy {
@@ -94,19 +115,19 @@ fn main() {
                 }
             }
         }
-        if entropy == 1 {
-            board[y][x].current_value = board[y][x].super_pos[0];
-            board[y][x].super_pos.clear();
-            propagate(&mut board, x, y);
-            println!("{}", entropy);
-        } else {
-            break;
+        if entropy > 1 {
+            // Push a copy of the board to the stack
         }
-        //break;
+        board[y][x].current_value = board[y][x].super_pos[0];
+        board[y][x].super_pos.clear();
+        propagate(&mut board, x, y);
+        //println!("{}", entropy);
     }
 
     //println!("{} at {},{}", entropy, x, y);
-    println!("{}", board_complete(board))
+    //println!("{}", board_complete(board));
+    print_board(&board);
+    println!("{}", board[1][0].super_pos.len())
 
     //println!("{}", board[0][4].current_value);
     //println!("{}", board_complete(board));
