@@ -1,6 +1,7 @@
 use std::fs::File;
 use std::io::{BufReader, BufRead};
 
+#[derive(Clone)]
 struct Cell {
     super_pos: Vec<u32>,
     current_value: u32
@@ -22,7 +23,6 @@ fn board_valid(board: &Vec<Vec<Cell>>) -> bool {
     for y in 0..=8 {
         for x in 0..=8 {
             if board[y][x].current_value == 0 && board[y][x].super_pos.len() == 0 {
-                println!("{},{}", y, x);
                 return false;
             }
         }
@@ -90,6 +90,7 @@ fn main() {
     }
 
     // Actual Solver
+    let mut boardstack: Vec<(Vec<Vec<Cell>>, usize, usize, u32)> = Vec::new();
     let mut entropy: usize;
     loop {
         if board_complete(&board) {
@@ -97,10 +98,15 @@ fn main() {
             break;
         }
         if !board_valid(&board) {
-            println!("Invalid Board");
-            // Pop top board off the stack
-            // If stack is empty, puzzle is invalid?
-            break;
+            // If stack is empty, puzzle is invalid
+            if boardstack.len() == 0 {
+                println!("Board is invalid");
+                break;
+            }
+            // Replace board with iteration before error, remove value tried as an option, pop top board from stack
+            board = boardstack.last().unwrap().0.clone();
+            board[boardstack.last().unwrap().2][boardstack.last().unwrap().1].super_pos.retain(|a| !a.eq(&boardstack.last().unwrap().3));
+            boardstack.pop();
         }
         x = 0;
         y = 0;
@@ -115,25 +121,13 @@ fn main() {
                 }
             }
         }
+        // Push a copy of the board to the stack
         if entropy > 1 {
-            // Push a copy of the board to the stack
+            boardstack.push((board.clone(), x, y, board[y][x].super_pos[0]));
         }
         board[y][x].current_value = board[y][x].super_pos[0];
         board[y][x].super_pos.clear();
         propagate(&mut board, x, y);
-        //println!("{}", entropy);
     }
-
-    //println!("{} at {},{}", entropy, x, y);
-    //println!("{}", board_complete(board));
     print_board(&board);
-    println!("{}", board[1][0].super_pos.len())
-
-    //println!("{}", board[0][4].current_value);
-    //println!("{}", board_complete(board));
-    //println!("{}", board_valid(board));
-
-    //for i in 0..=board[7][1].super_pos.len()-1 {
-    //    println!("{}", board[7][1].super_pos[i]);
-    //}
 }
